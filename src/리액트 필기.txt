@@ -1,0 +1,865 @@
+7.17
+1. 수업 소개
+리액트의 핵심적인 역할은 사용자 정의 태그를 만드는것
+
+2. 실습환경구축
+노드 설치 -> npx create-react-app . 다 설치 됐으면 
+npm start를 통해 홈페이지 생성
+
+3. 소스코드 수정방법
+src-> index.js 파일 열어보면
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';     -> 뒤에 .js 생략.     . 이라는 기호는 현재 디렉토리를 의미
+import reportWebVitals from './reportWebVitals';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));  -> 아이디 값이 root인 태그를 담고 
+root.render(                -> 렌더링
+  <React.StrictMode>
+    <App />   -> UI 본체  
+  </React.StrictMode>
+);
+
+이렇게 나와 있는데 
+
+
+18~23번째 줄은 App 태그가 아디값이 root인 태그로 렌더링 되란 소리.
+<App /> 을 지우면 모든게 다 사라짐. 즉 리액트 기본 UI는 저 APP.js (js생략된거) 안에 있다는거임.
+그리고 App.js는 App.css라고 또 따로 있음. App.css로 가서 다 지우고 백그라운드 컬러 색 조정하면 변함.
+
+그리고 npm start 해서 나온 홈페이지를 개발자 도구를 보면 
+App 클래스가 지정된 div를 감싸는 root라는 클래스를 가진 div가 있는데 이거는  
+
+index.css에도 index.js에서도 App.css도 없음. 그럼 이게 어딨을까?
+
+public 폴더에 있음
+
+public -> index.html에 보면 있음. root id를 가진 div가 있는데 이걸 수정하면 
+
+리액트 그림2
+
+처럼 됨.
+
+
+대충 그런 느낌. 이제는 배포에 대해서 알아보자면
+
+npm start를 통해 만든건 개발하긴 좋지만 용량은 착하지 못함.
+
+터미널에서 나간뒤 컨트롤 C해서 명령어 입력 할 수 있는창으로 나가서 
+
+npm run build
+
+타이핑. 그러면 build 폴더가 생기고 그안에 index.html이 있는데 
+눌러보면 공백없이 딱딱 가득차있음. 최대한 용량을 줄이기 위해 이렇게 나온거임.
+배포판은 가독성이 필요 없어서.
+
+이거를 서비스 할려면 
+
+npx serve -s build 를 치면 됨.
+
+리액트 그림 4
+
+
+===============================================================================================================================================
+
+7.18 
+
+4. 컴포넌트 만들기
+
+리액트는 사용자 지정 태그를 만드는것이다.
+
+import logo from './logo.svg';
+import './App.css';
+
+function App() {
+  return (
+    <div className="App">
+      <header className="App-header">
+        <h1><a href="/">WEB</a></h1>
+      </header>
+      <nav>
+        <ol>
+          <li><a href="/read/1">html</a></li>
+          <li><a href="/read/2">css</a></li>
+          <li><a href="/read/3">js</a></li>
+        </ol>
+      </nav>
+      <article>
+        <h2>Welcome</h2>
+        Hello, web
+      </article>
+    </div>
+  );
+}
+
+export default App;
+
+이런 코드가 있을때 각각 header 태그가 1억줄
+nav 태그가 1억줄 
+article 태그가 1억줄이 있으면 코드를 파악하기 어려움.
+
+정리 정돈 하고 싶을거임.
+우리는 여기 있는 이 복잡한? 태그들을 하나의 이름으로 이름을 붙여서 사용자 정의 태그를 만들고 싶음(가정)
+사용자 정의 태그는 함수로 정의하면 됨.
+
+import logo from './logo.svg';
+import './App.css';
+function Header(){
+    return <header className="App-header">
+            <h1><a href="/">WEB</a></h1>
+           </header>
+}
+
+function App() {
+  return (
+    <div className="App">
+      <Header></Header>    -->> 이부분이 킬포.
+      <nav>
+        <ol>
+          <li><a href="/read/1">html</a></li>
+          <li><a href="/read/2">css</a></li>
+          <li><a href="/read/3">js</a></li>
+        </ol>
+      </nav>
+      <article>
+        <h2>Welcome</h2>
+        Hello, web
+      </article>
+    </div>
+  );
+}
+
+이렇게 하면 됨.
+
+리액트 그림 7
+리액트 그림 8
+
+쨌든. 리액트에선 사용자 정의 태그란 말을 쓰지 않고 컴포넌트 라고함.
+
+
+5. props
+
+html은 이미지를 넣을떄 
+
+<img src="1.jpg" width ="100" height="100">
+
+이런식으로 함.  
+
+컴포넌트도 저렇게 속성을 가지면 얼마나 좋을까 싶었고 
+리액트에선 저런 속성을 props라고 부름.
+
+
+function Header(props){
+  return <header className="App-header">
+          <h1><a href="/">{props.title}</a></h1>
+         </header>
+}
+
+<Header title="REACT"></Header>
+
+이렇게 컨포넌트에 파라미터로 props를 주고 저렇게 {}로 묶으면 props가 출력됨.
+인자값 전달은 아래처럼.
+
+function Nav(){
+  return <nav>
+    <ol>
+      <li><a href="/read/1">html</a></li>
+      <li><a href="/read/2">css</a></li>
+      <li><a href="/read/3">js</a></li>
+    </ol>
+  </nav>
+}
+
+이런건 어떻게 props 값을 주냐면 우선 저 값을 자바스크립트 문법에 맞게 작성
+
+const topics =[
+    {id : 1, title:'html', body:'html is...'},
+    {id : 2, title:'css', body:'css is...'},
+    {id : 3, title:'javascript', body:'javascript is...'}
+]
+
+const는 상수라는 뜻인데 한번 선언하면 뒤에서 바꿀 수 없어서 코드가 단단해짐.
+
+그리고 이제 이 값을 props로 줄려면
+
+<NAV topics="topics"></NAV> 이렇게하면 단순 문자열만 전달됨. 제대로 할려면
+<NAV topics={topics}></NAV>  이렇게 중괄호로 묶으면 배열(객체)도 props 값으로 줄 수 있음.
+
+그리고 이제 NAV 컨포넌트에 배열하나 선언해주고 props 값을 다 추가해줌.
+
+function NAV(){
+    const lis = [];
+    for(let i=0; i<props.topics.length; i++){
+      let t = props.topics[i];
+      lis.push(<li key={t.id}><a href={'/read'+t.id}>{t.title}</a></li>);
+    }
+    return <nav>
+        <ol>
+            {lis}   // 프롭스를 받아서 동적으로 태그를 받아야함 그러기 위해서 위 수식.
+        </ol>
+    </nav>
+}
+
+ 프롭스를 받아서 동적으로 태그를 받아야함 그러기 위해서 위 수식.
+ 그리고 동적으로 만들어주는 태그들은 key값을 가지고 있고 
+ key값들은 반복문 안에서는 유니크 해야함.
+ 리액트는 자동으로 생성된 태그에는 리액트가 태그들을 추적 해야하는데
+ 추적 할떄 근거가 있어야함. 그 근거로 우리가 리액트에 key라는 약속된
+ prop를 줌. 
+
+ 이제 우리의 컴포넌트는 언제나 똑같이 동작하는게 아니고 
+ 어떤값을 주냐에 따라서 다르게 동작하는 똑똑한 그걸 만든거임.
+
+
+Q. 배열 topics가 굳이 app 컴포넌트 안에 있어야 하는 이유?
+A. topics에 데이터를 넣어버리면 topics는 재활용성이 떨어짐.
+공통된 부분을 NAV 함수에 넣고 topics 데이터는 그때 그때 넣는게 재활용성이 좋음.
+
+
+====================================================================================================================================================
+
+6. 이벤트 
+
+7.20
+
+<input onclick="어쩌구"></input>
+
+이건 html의 이벤트임.  우리가 작성하고 있는 리액트 컴포넌트에도 이런 이벤트가 발생하게 할거임.
+
+function Header(props){
+  return <header className="App-header">
+          <h1><a href="/">{props.title}</a></h1>
+         </header>
+}
+
+
+function App() {
+  const topics = [
+    {id:1, title:'html', body:'html is...'},
+    {id:2, title:'css', body:'css is...'},
+    {id:3, title:'javascript', body:'javascript is...'}
+  ]
+
+  return (
+    <div className="App">
+      <Header title="REACT"></Header>
+      <NAV topics={topics}></NAV>
+      <Article title="Welcome" body="My Matamask list"></Article>
+      <Matamask address1={address1}></Matamask>
+    </div>
+  );
+}
+
+
+대충 이렇게 코드가 있고 헤더 함수에 이벤트를 지정 할거임.
+
+<Header title="REACT" onChangeMode={function()
+    alert('Header');
+} ></Header>
+
+이렇게 이벤트를 지정하고 싶으면 
+
+function Header(props){
+  return <header className="App-header">
+          <h1><a href="/" onClick={function(event){
+            event.preventDefault();  --> 이부분
+            props.onChangeMode(); --> 이부분 2
+          }}>{props.title}</a></h1>
+         </header>
+}
+
+이렇게 A태그에 온클릭을 지정 해줘야하는데 이 A태그는 html이 아니고 유사 html이라고 보면 됨. 우리가 작성한 이 리택트? A태그를 리액트 개발환경이
+컴퓨터가 알아들을 수 있게 html로 컨버팅 해주는것. 그리고 function에 event 객체를 첫 번쨰 파라미터로 주입해줌. 이벤트 객체에는
+이벤트 상황을 제어 할 수 있는 여러가지 정보가 들어가 있음.
+preventDefault 는 A태그를 누르면 웹페이지가 리로드 되는 그런 기본 동작을 방지해줌.
+prevnent -> 방지라는 의미
+
+그리고 props의 인자값으로 전달된 onChangeMode(); 를 호출하면 아까 onChangeMode에 지정한 함수를 호출 할 수 있게 됨.
+
+function Header(props){
+  return <header className="App-header">
+          <h1><a href="/" onClick={(event)=>{    << 이부분
+            event.preventDefault();  
+            props.onChangeMode(); 
+          }}>{props.title}</a></h1>
+         </header>
+}
+
+<Header title="REACT" onChangeMode={()=>{ <<< 이부분
+    alert('Header');
+}></Header>
+
+
+
+
+저기에 표시해 놓은 function 써있는거 지우고 => 표시 해주는걸 어로우 펑션이라고 하나봄.
+콜백 함수 따로 공부 하고...
+
+
+
+
+onClick={(event)=>{  이렇게 파라미터가 한개인거는 
+onClick={evnet}=> 이런식으로 괄호 생략 가능.
+
+
+다음은 Nav를 클릭했을때 id값이 나오게 하고 싶음.
+
+<NAV topics={topics} onChangeMode={id=>{   << 1)
+  alert(id);
+}}></NAV>
+
+function NAV(props){
+  const lis = []
+  for(let i=0; i<props.topics.length; i++){
+    let t = props.topics[i];
+    lis.push(<li key={t.id}>
+      <a id={t.id} href={'/read'+t.id} onClick={event=>{ <<< 2)
+        event.preventDefault();
+        props.onChangeMode(event.target.id);   <<< 3)
+    }}>{t.title}</a></li>)
+  }
+  return <nav>
+    <ol>
+      {lis}
+    </ol>
+  </nav>
+}
+
+
+
+1) 파라미터가 1개면 괄호 생략 가능
+2) id를 출력하고 싶으니 a태그에 id = {t.id} 지정 해줬음.
+3) id를 얻어오기 위해 event 객체에 target를 쓰는건데 이건 이벤트를 유발 시키는 태그를 가리킴. 함수의 id를 이걸로 지정
+    또 굳이 event.target.id 로 지정하지 않고 t.id로 하더라도 코드는 잘 동작하지만 만약 저런 코드가 1억줄 있다 라고 한다면
+    저 event.target.id 는 바로 위에 있는 a태그의 id값을 나타내는구나 하고 직관적 의미를 가질 수 있음....
+
+1                           2                           3
+function(enent){            (event)=>{                  event=>{                                                
+    어쩌구           =          어쩌구         =             어쩌구(이건 괄호가 한개일때만.)
+}                           }                           }
+
+1. 기본
+2. function 지우고 => 써주면 같은 의미
+3. 파라미터 1개면 이렇게 괄호 생략 가능.
+
+=================================================================================================================================================
+
+8. state
+
+리액트 그림9
+
+리액트에 컴포넌트가 있는데 컴포넌트는 입력과 출력이 있음.
+입력은 prop 출력은 return임.
+
+prop과 함께 컴포넌트 함수를 다시 실행해서 새로운 리턴 값을 만들어주는 state라는 기능에 대해서 알아볼거임.
+prop와 state 둘다 값이 변경되면 새로운 리턴값을 만들어서 UI를 바꿈.
+
+prop와 state의 다른점이 뭐냐면
+
+prop는 컴포넌트를 사용하는 외부자를 위한 데이터고 
+state는 컴포넌트를 만드는 내부자를 위한 데이터라는 차이점이 있음.
+
+그럼 일단 지금 현재 홈페이지에 html을 클릭하면 밑에 Article의 글이 html is... css를 클릭하면 css is... 이렇게 되게 하고 싶음.
+그래서 위의 코드를
+
+
+const mode = 'WELCOME';
+let content = null;
+
+if(mode === 'WELCOME'){
+    content = <Article title="Welcome" body="My Matamask list"></Article>
+
+}else if(mode === 'READ'){
+    content = <Article title="READ" body="My Phanthom list"></Article>
+}
+
+그럼 mode 상수에 대입된 값이 WELCOME일때 READ일때 값이 바뀜.
+
+그래서 이제 저거를 html을 클릭하면 바뀔 수 있게 이렇게 넣어봄.
+
+(APP함수임)
+  return (
+    <div className="App">
+      <Header title="REACT" onChangeMode={()=>{
+        mode = "WELCOME"; >>>
+      }}></Header>
+      <NAV topics={topics} onChangeMode={id=>{
+        mode = "READ"; >>>
+      }}></NAV>
+      {content}
+      <Matamask address1={address1}></Matamask>
+    </div>
+  );
+}
+
+하지만 이렇게 한다고 아무것도 변하지 않음. 왜냐면 APP함수는 다시 실행되지 않기 때문임. 이럴때 사용하는게 State임.
+state를 사용하기 위해선
+
+import useState from 'react'; 
+
+이렇게 임포트 해줘야함.
+
+그리고 
+
+const _mode = useState('WELCOME');
+
+이렇게 함. 이건 상태를 만드는건데 상태가 _mode에 들어감.
+_mode를 살펴보기 위헤
+
+console.log('_mode', _mode); 
+
+해보면
+
+리액트 그림 10  
+
+0번쨰 원소는 우리가 지정한 값.
+1번째 원소는 함수임.
+
+useState는 배열을 리턴하고 배열의 
+
+0번째 값은 상태의 값을 읽을때 사용
+1번째 값은 상태의 값을 변경할때 사용하는 함수임.
+
+const _mode = useState('WELCOME');
+const mode = _mode[0];
+const setMode = _mode[1];
+
+위와 같은 느낌이고 
+정리하면 useState의 인자는 useState의 초기 값.
+state의 값은 0번째 인덱스로 읽음
+mode의 조정은 1번째  인덱스로 읽음.
+
+그리고 위의 코드는 축약해서 
+
+const [mode, setMode] = useState('WELCOME'); 
+가 될 수 있음. 위에 3줄짜리랑 같은 효과.
+
+그럼 이제 nav를 클릭 했을때 그거에 맞게 텍스트가 바뀌는걸 구현 해보려함.
+그럴려면 id도 세팅하는 state를 만들어줘야함.
+
+ const [id,setID] = useState(null);
+
+이렇게 변수 만들고 
+
+<NAV topics={topics} onChangeMode={_id=>{
+  setMode("READ");
+  setID(_id);
+}}></NAV>
+
+여기에 props 값으로 id를 주고 setID로 topics의 id가 세팅되게하고 
+
+
+  if(mode === "WELCOME"){
+    content = <Article title="WELCOME" body="Hello WEB"></Article>
+  }else if(mode === "READ"){
+    let title, body  = null;     >>>  1)
+    for(let i = 0 ; i<topics.length; i++){ >>> 2)
+      console.log(topics[i].id,id)
+      if(topics[i].id === id){  >>> 3)
+        title = topics[i].title  
+        body = topics[i].body
+      }
+    }
+    content = <Article title={title} body={body}></Article>  >> 4)
+  }
+
+1) 클릭에 따라 Article의 내용이 바뀔 수 있게 변수로 선언
+2) 토픽스의 길이만큼 순회 시켜서 일치하는 아이디를 찾고 
+3) 일치하면 title와 body에 값을 넣어줌.
+4) 출력.
+
+이렇게 하면 처음에 오류가 나는데 왜냐면 nav 내부를 보면 
+
+function NAV(props){
+  const lis = []
+  for(let i=0; i<props.topics.length; i++){
+    let t = props.topics[i];
+    lis.push(<li key={t.id}>
+      <a id={t.id} href={'/read'+t.id} onClick={event=>{
+        event.preventDefault();
+        props.onChangeMode(Number(event.target.id));   >>>> 5)
+    }}>{t.title}</a></li>)
+  }
+  return <nav>
+    <ol>
+      {lis}
+    </ol>
+  </nav>
+
+  5) 원래 event.target.id 이부분이 Number 안감싸져있었는데 우리가 topics에 id값을 숫자로 줬지만 그걸 객체에 
+     값으로 넣으면 문자열로 변환되서 들어간다고 함. 즉 저 id 값은 문자열이고 숫자열과 비교가 안되서 그런것.
+    Number로 숫자로 변환하면 if문이 무사히 수행됨.
+
+
+의문점 : NAV 함수안에 온체인지 모드로 함수를 호출 했을떄 인자값이... 어떻게 id가 딱 들어가는지...
+ㄴ 콘솔 로그를 찍어보니 온 체인지 모드 아래에 있는건 온체인지 모드로 함수를 실행한 다음? 이벤트 객체가 id를 반환하고 그런거 같음.
+
+useState는 값이 바뀌면 App 함수를 다시 실행 시키는 원리.
+
+===================================================================================================================================================
+
+7.22
+8. Create
+
+대부분의 언어는
+
+Create Read Update Delete 기능을 지원함.
+이중 우리는 이미 Read는 구현 했음 이번에 Create를 할 거임.
+
+a태그 create를 누르면 제목 입력창 글 입력창 그리고 Create 버튼이 나오고 버튼을 누르면 입력값이 위로 추가 되게 만들거임.
+
+리액트 그림 11
+
+
+
+      <a href="/create" onClick={event=>{
+        event.preventDefault();
+        setMode("CREATE"); <<<< 1)  새로운 모드 하나 추가 해주고 
+        // topics.push({id:4, title:"create", body:""})      >>> 실패의 흔적들
+        // content = <Article title="create" body=""></Article> >>> 실패의 흔적들
+        // console.log(content,"이거"); >>> 실패의 흔적들
+      }}>Create</a>
+
+  }else if(mode === "CREATE"){  <<<<  2) .
+    content = <Create></Create>  <<< 3) 
+  }
+
+function Create(){    <<<< 4)
+  return <article>
+      <h2>Create</h2>   <<< 5)
+      <form>
+        <p><input type="text" name="title" placeholder='title'/></p>   <<< 6)
+        <p><textarea name="body" placeholder="body"><textarea></p>    <<< 7)
+      </form>
+  </article>
+}
+
+1) 새로운 모드 하나 추가 해주고
+2) CREATE 모드를 쓰면 이렇게 된다고 지정해주기.
+3) content에 새로운 모드 하나 지정 
+4) Create 컴포넌트? 추가.  
+5) Create 입력되게하고
+6) 텍스트바, 텍스트 에어리어 추가. 
+7)  그림 12 처럼 보기 안좋으니 p태그로 감싼다 
+
+
+function Create(props){
+  return <article>
+      <h2>Create</h2>
+      <form onSubmit={event=>{
+        event.preventDefault();   <<< 2)
+        const title_value = event.target.title.value; <<< 3)
+        const body_value = event.target.body.value; <<<< 4)
+        props.onCreate(title_value,body_value); <<< 5)
+      }}>
+        <p><input type="text" name="title" placeholder='title'/></p>
+        <p><textarea name="body" placeholder='body'></textarea></p>
+        <p><input type="submit" value="Create"/></p>   <<< 1)
+      </form>
+  </article>
+}
+
+
+
+1) onSubmit은 서브밋 버튼을 눌렀을때 폼 태그에서 일어나는 이벤트.
+2) onSubmit도 누르면 페이지 리로드가 일어나기 때문에 방지.
+3) onSubmit은 이 이벤트가 일어나는 태그를 가리킴. 즉 form 태그안에 있는걸 지정할 수 있어서 
+   새로 선언한 상수안에 이름이 title인 것의 벨류 (제목창) 넣어줌.
+4) 마찬가지로 이름이 바디인거의 (텍스트 에어리어)를 넣어줌.
+5) 이제 이 값을 전송해서 값을 실행할 함수가 필요 create 컴포넌트에 선언한 onclick가 가리키는 함수를 실행해야함.
+====================================================================================================================================
+★★★
+번외로 create 부분을 useState없이 구현 해봤는데 
+topic배열을 전역변수로 선언하고 id 값을 담을 변수도 전역변수로 선언
+CREATE 부분에서 직접 배열에 푸쉬를 해주고 setid를 전역변수로 선언한 id로 셋팅하고 
+id+1 해주는식으로도 구현 가능.
+
+★★★ useState는 값이 바뀌면 그게 실행된 컴포넌트 자체를 다시 실행시키는듯. 본인 제외 
+======================================================================================================================================
+
+  const [nextID,setNextId] = useState(4); <<< 1) 
+
+  }else if(mode === "CREATE"){
+    content = <Create onCreate={(_title,_body)=>{
+      const newTofic = {id: nextID,title:_title,body:_body}   <<< 2)
+      const newTofics=[...topics] <<< 3)
+      newTofics.push(newTofic);
+      setTofics(newTofics);
+      setMode("READ");
+      setNextId(nextID+1)
+      
+      // topics.push({id:topics_id, title: _title, body:_body})
+      // console.log(topics,"토픽");
+      // setMode("READ");
+      // setID(topics_id);
+      // topics_id = topics_id+1;
+    } }></Create>
+  }
+
+1) ID 값을 따로 관리 하기 위해 새로운 스테이트 선언. topic 배열의 마지막 id값이 3이어서 기본값 4로 
+2) 새로운 객체에 값 추가.  
+3) 리액트 그림 13 
+상태를 만들때 그 데이터가 PRIMITIVE(원시) 타입이다.
+ex) number, String, bool
+그럼 그냥 원래 하던대로 
+
+const [nextID,setNextId] = useState(4);
+
+이렇게 하면됨.
+
+근데 상태로 만들 데이터가 범객체라면
+ex) 객체, 배열
+이런건 처리 방법이 달라짐.
+
+이렇게 ... 3개를 찍으면 그걸 그대로 복제한다는 뜻.
+newValue = {...value}
+그리고 복제한걸 setvalue 값으로 넣어주면 됨.
+setValue(newValue);
+
+배열이라면 {}가 아닌 []로
+
+newValue = [...value]
+setValue =[newValue]
+
+이렇게 해야 컴포넌트가 다시 실행됨.
+
+이유는 
+
+리액트 그림 14
+
+만약 
+
+const [value,setValue] = useState([배열]);
+이건 배열임.
+
+value.push(2); 
+하면 기존의 배열에 2가 추가됨.
+setValue(value) 를 해도 다시 렌더링이 안됨.
+셋 벨류한 값이 기존의 데이터와 같으면 굳이 다시 렌더링을 안함.
+(메모리 값으로 판단해서 배열 끝에 데이터가 하나 추가 되도 그 배열의 메모리 값이 달라지진 않음.)
+
+반면에   
+
+const [value,setValue] = useState(1);
+
+이건 원시 데이터 타입.
+setValue(2);
+
+이렇게 하면 1이 아닌 2라는 새로운 메모리 주소가 들어가는걸로 이해...
+그래서 다시 렌더링됨.
+
+
+Create a태그 추가
+클릭 하면 타이틀창 내용창 나오고 입력하고 create 버튼 누르면 그 내용이 위로 가서 nav쪽에 추가 되고 상세 페이지 나오게...
+
+
+
+========================================================================================================================================
+
+7.24
+
+
+9. Update
+
+UPDATE는 크리에이트와 
+
+Update는 create와 read를 하이브리드해서 구현됨.
+
+업데이트 기능을 어떻게 구현할거냐면 일단은
+create 밑에 업그레이드 링크를 하나 추가하고 그 링크는 그냥 화면에선 안보이고 
+상세보기 화면에서만 보이도록 설계 할거임.
+
+let contextControl = null;  << 1) Update 가 담길 변수 
+      <ul>
+        <li>
+          <a href="/create" onClick={event=>{
+            event.preventDefault();
+            setMode("CREATE");
+          }}>Create</a>
+        </li>
+        {contextControl}  << 2) 평소엔 null이었다가 Read모드가 되면 그때 변수에 Update 태그가 들어갈거임.
+      </ul>
+
+이렇게하고 상세보기 페이지는 READ 상태일때만 보일거니깐
+
+}else if(mode === "READ"){
+    let title, body  = null;
+    for(let i = 0 ; i<topics.length; i++){
+      console.log(topics[i].id,"id")
+      console.log(id,"비교할 id");
+      if(topics[i].id === id){
+        title = topics[i].title
+        body = topics[i].body
+        console.log(title,"title");
+        console.log(body,"body");
+      }
+    }
+    content = <Article title={title} body={body}></Article>
+    contextControl = <li><a href={'/update/'+id}>Update</a></li> // eslint-disable-line no-unused-vars  <<< 3) 
+    console.log(content,"이거 실행되냐?");
+   
+
+3) 이부분 이렇게 추가. 그리고 href부분을 {}로 감쌌고 "/update/" 로 뒤에도 /를 붙여줬는데 업데이트 된거는 
+관례적으로 슬래시(/)을 뒤에도 붙인다고 함. {}로 감싼건 뒤에 id값을 같이 표시하기 위함/
+update를 클릭 했을때 그 update의 고유한 아이디가 있을거고 그것도 같이 표시 되면 좋을것이기 때문에...! 
+
+리액트 그림 15
+
+처럼 좌측하단에 표시됨.
+
+}else if(mode === "READ"){
+    let title, body  = null;
+    for(let i = 0 ; i<topics.length; i++){
+      console.log(topics[i].id,"id")
+      console.log(id,"비교할 id");
+      if(topics[i].id === id){
+        title = topics[i].title
+        body = topics[i].body
+        console.log(title,"title");
+        console.log(body,"body");
+      }
+    }
+    content = <Article title={title} body={body}></Article>
+    contextControl = <li><a href={'/update/'+id} onClick={event=>{     <<< 4)
+      event.preventDefault();   <<< 5)
+      setMode("UPDATE");  << 6) 
+    }}>Update</a></li> // eslint-disable-line no-unused-vars  
+    console.log(content,"이거 실행되냐?");
+
+4) update태그를 클릭했을때 
+5) 페이지 리로드 안되게하고 
+6) 모드 setMode로 
+
+} else if(mode === "UPDATE"){  <<< 7)
+  content = <Update></Update>
+}
+
+
+7) 모드가 업데이트 일때 Update 컴포넌트 실행
+
+
+function Update(props){ <<< 8)  
+  const [title,setTitle] = useState(props.title)  << 11) 
+  const [body,setBody] = useState(props.body)
+  return <article>
+          <h2>Update</h2>   <<< 8-1
+          <form onSubmit={event=>{
+            event.preventDefault();
+            const title_value = event.target.title.value;
+            const body_value = event.target.body.value;
+            props.onUpdate(title_value,body_value); <<< 8-2
+          }}>
+            <p><input type="text" name="title" placeholder='title' value = {title} onChangeMode={event=>{ << 10  <<< 11-1
+              setTitle(event.target.value);   << 12)
+            }}/></p>                                                                            
+            <p><textarea name="body" placeholder='body' value={body} onChangeMode={event=>{
+              setBody(event.target.value);
+            }}></textarea></p>
+            <p><input type="submit" value="Update"/></p>
+          </form>
+      </article>
+  return 
+}
+
+} else if(mode === "UPDATE"){ 
+  let title, body  = null;     <<< 9-1)
+  for(let i = 0 ; i<topics.length; i++){
+      if(topics[i].id === id){
+        title = topics[i].title
+        body = topics[i].body
+      }
+  }
+  content = <Update title={title} body= {body} onUpdate={(title,body)=>{       << 8-3   <<< 9-2
+  const updatedTofic = {id:id, title: title, body: body}  <<< 13
+  const newTofics = [...tofic]  << 14) 복제 
+  for(let i=0; i=newTofics.length; i++){ << 15)
+    if(newTofics[i].id === id){
+      newTofics[i] = updatedTofic;
+      break;
+    }
+  }
+  setTofics = newTofic;
+  setMode("READ");
+
+  }}></Update>
+}
+
+
+8) create 복사 붙여 넣기
+8-1) 기존 create의 부분인데 우린 Update를 할거니깐 Update에 맞게 내용 수정해줌.
+8-2) 기존 create의 부분인데 onCreate함수를 호출하는 부분.  onUpdate로 바꿔주고 
+8-3) 이제 그에 맞게 Update 컴포넌트 호출 부분에 onUpdate 이벤트 지정에 필요한 인자값 지정. 일단 여기까지.
+9) create와 다른점은 update는 수정이라서 기존에 작성 됐던 내용이 불러와지면 좋음. 그러기 위해서 Update 컴포넌트가 실행될때 
+   props의 값으로 body와 title가 넘어올 필요가 있음.
+9-1) 그래서 else if(mode === "READ"){}에서 title와 body를 따오는 부분을 복사해서 붙여넣고 
+9-2) Update 컴포넌트를 호출할때 title 값과 body값을 props값으로 전달.
+
+10) 그리고 이제 Update 컴포넌트로 타이틀과 바디의 값이 전달 됐으니 제목창에 value = {props.title} 내용창에 value = {props.body}이렇게 전달하면   
+  내용이 전달됨 근데 수정이 안됨! props는 어명 같은 어길 수 없는 그런 느낌이라서 수정이 불가능.저걸 스테이트로 지정을 해주어야 수정 할 수 있음.
+  저렇게하고 홈페이지가서 텍스트바에 아무리 키보드로 쳐넣어도 내용이 안변함. (props는 외부자가 내부로 보내는 명령 , state는 내부자가 사용하는 명령이라서)
+11) 해결 하려면 props가 아니고 state를 사용해야함 그래서 타이틀과 바디를 state로 바꿔줘야함.
+11-1) 제목창의 value = {props.title} => value = {title}  내용창의 value = {props.body} => value = {body} 수정.
+    ㄴ 이래도 안바뀜. 저기 연결된 state는 바뀌지 않아서...  
+12) onChangeMode 이벤트를 걸어서 (  html에서는 값이 바뀌고 커서가 밖으로 나와야 실행 되는데 리액트에서는 그냥 하나 입력 될때마다 onchange 실행) 
+    setTitle와 setBody로 값을 갱신해줌.  state의 값은 컴포넌트안에서 바꿀 수 있는 값이니깐. 안하면 값에다가 ab를 치면 javascriptb 이렇게 
+    맨 끝글자만 추가 되고 내용도 안바뀌는 상태가 됨.
+
+13) 이제 서브밋을 누르면 onUpdate 실행 내용 지정 Update는 READ 상태에서 넘어오기 때문에 id는 그냥 사용 나머진 event 객체를 통해 잘 넘어옴.
+14) setTopic를 이용하기 위해 복제
+15) 일치 하는 아이디를 찾기 위한 for문 아이디가 일치하면 지금 우리가 선택한 토픽이란 의미. 복제한 토픽에 updatedTofic의 값을 넣어주고 브레이크.
+16) 이제 setTofic를 newTofic로 바꿔주고 
+17) READ모드로 이동하면 서브밋 누르고 내용 갱신되고 상세보기 페이지 까지 이동.
+
+
+
+1. update 태그 추가  update 태그는 read 모드일때만 노출.
+2. 기본 골자는 create랑 똑같음.
+3. 누르면 그 값이 타이틀창이랑 텍스트바에 전달되게 하기.
+4. 그걸 수정 할 수 있게 하기. (useState)
+
+
+
+=============================================================================================================================================================
+
+7.26 
+10. Delete
+우선 Delete 기능을 구현을 이렇게 할 거임.
+create update 는 링크지만 delete 버튼은 버튼으로 구현을 하고
+이것 역시 READ 모드일때 보이는걸로 
+경고창 띄우지 않고 누르면 바로 삭제 되게.
+그러기 위해서.
+
+
+contextControl = <>    <<< 1)
+      <li><a href={'/update/'+id} onClick={event=>{
+        event.preventDefault();
+        setMode("UPDATE");
+        }}>Update</a></li>
+      <li><input type="button" value ="delete" onClick={(){ <<< 2)
+          if(window.confirm("정말로 삭제하시겠습니까")){   <<< 7) 삭제 확인창 자체 구현.
+            const cloneTopics = []  << 3)
+            for(let i=0;i<topic.length;i++){
+              if(topic[i].id !== id){   <<< 4)
+                cloneTopics.push(topic[i]); <<< 5)
+              }
+            }
+            window.alert("삭제 되었습니다");
+            setTofic(cloneTopics);  <<< 6) 
+            setMode("WELCOME");
+      }else{
+          window.alert("삭제를 취소했습니다.");
+      }}></input></li>
+    </> // eslint-disable-line no-unused-vars  <<< 1)
+
+1) <></> 비어있는 이런 태그를 삽입해주면 저 태그안에 있는걸 그룹핑 하는 의미임.
+2) 딜리트 버튼 클릭 했을때 이벤트 지정
+3) 알지? 스테이트 쓸려면 새로 만드는 그 배열
+4) ===는 같음이고 !===는 다른거임.  만약 현재 아이디와 다른거만 새로운 배열에 추가하고 출력하면 
+   자연히 현재꺼가 삭제 되는 효과가 나올거임.
+5) 위에껄 구현하기 위해 새로운 토픽에는 현재 세팅된 아이디와 다른 기존 토픽의 값을 추가하고 
+6) 셋토픽으로 조져불기.
+
+
+    
